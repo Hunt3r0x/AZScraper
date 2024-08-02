@@ -41,6 +41,8 @@ python3 ./AZScraper.py -dob <DATE-of-BIRTH> -o <output_file>
 python3 ./AZScraper.py -dob 20304 -o results.json
 ```
 
+![alt text](image.png)
+
 This command will use `20304` as the base value and save the valid results to `results.json`.
 
 ## How It Works
