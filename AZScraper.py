@@ -114,6 +114,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SCRIPT TO BRUTEFORCE EG-ID IN AZHAR.")
     parser.add_argument('-dob', type=ValidateDateOfBirth, required=True, default='60101', help='date of Birth YMMDD like 20304 (-dob 20304)')
     parser.add_argument('-o', '--file', type=str, default='valid_responses.json', help='Output to save results.')
+    parser.add_argument('-t', '--threads', type=int, default='50', help='Threads.')
     args = parser.parse_args()
     
     base_value = args.dob
@@ -123,7 +124,7 @@ if __name__ == "__main__":
     lock = threading.Lock()
     stop_event = threading.Event()
 
-    num_threads = 500
+    num_threads = args.threads
 
     threads = []
     for _ in range(num_threads):
