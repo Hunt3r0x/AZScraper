@@ -62,7 +62,7 @@ def send_post_request(bruted_value, base_value, max_retries=20):
         #     time.sleep(1)
 
         try:
-            response = requests.post(url, headers=headers, data=payload, verify=False,proxies=proxy, timeout=(5, 15))
+            response = requests.post(url, headers=headers, data=payload, verify=False, timeout=(5, 15))
             response.raise_for_status()
             return response
         except requests.exceptions.HTTPError as e:
