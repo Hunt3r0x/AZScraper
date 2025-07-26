@@ -257,11 +257,10 @@ def signal_handler(sig, frame):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SCRIPT TO BRUTEFORCE EG-ID IN AZHAR.")
     
-    # Create mutually exclusive group for date input methods
-    date_group = parser.add_mutually_exclusive_group(required=True)
-    date_group.add_argument('-dob', type=ValidateDateOfBirth, help='Full date of Birth YMMDD like 70304 (-dob 70304)')
-    date_group.add_argument('-ym', '--year-month', nargs=2, metavar=('YEAR', 'MONTH'), 
-                           help='Year and Month like -ym 2007 3 (for March 2007)')
+    # Date input arguments (either exact date OR year+month)
+    parser.add_argument('-dob', type=ValidateDateOfBirth, help='Full date of Birth YMMDD like 70304 (-dob 70304)')
+    parser.add_argument('-y', '--year', type=ValidateYear, help='Birth year like -y 2007')
+    parser.add_argument('-m', '--month', type=ValidateMonth, help='Birth month like -m 3 (for March)')
     
     parser.add_argument('-g', '--gov', type=ValidateGovId, nargs='+', 
                        help='Specific governorate ID(s) to test (e.g., -g 01 12 for Cairo and Dakahlia). If not specified, all governorates will be tested.')
@@ -269,13 +268,23 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--threads', type=int, default='50', help='Threads.')
     args = parser.parse_args()
     
+    # Validate argument combinations
+    if args.dob and (args.year or args.month):
+        parser.error("Cannot use -dob with -y/--year or -m/--month. Choose either exact date (-dob) OR year+month (-y and -m).")
+    
+    if not args.dob and not (args.year and args.month):
+        parser.error("You must provide either:\n  - Exact date: -dob 70315\n  - Year and month: -y 2007 -m 3")
+    
+    if (args.year and not args.month) or (args.month and not args.year):
+        parser.error("When using year/month mode, both -y/--year AND -m/--month are required.")
+    
     # Determine base values to use
     if args.dob:
         base_values = [args.dob]
         print(f"[*] Using single date: {args.dob}")
-    else:
-        year = ValidateYear(args.year_month[0])
-        month = ValidateMonth(args.year_month[1])
+    else:  # args.year and args.month are both present
+        year = args.year
+        month = args.month
         base_values = generate_dates_for_month(year, month)
         print(f"[*] Using year {year}, month {month} - Generated {len(base_values)} dates")
         print(f"[*] Date range: {base_values[0]} to {base_values[-1]}")

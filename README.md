@@ -53,26 +53,26 @@ python3 AZScraper.py -dob 70315 -o results.json
 
 **Method 2: Year and Month (New!)**
 ```bash
-python3 AZScraper.py -ym 2007 3 -o results.json
+python3 AZScraper.py -y 2007 -m 3 -o results.json
 ```
 
 ### 🗺️ Governorate Selection
 
 **Test All Governorates (Default)**
 ```bash
-python3 AZScraper.py -ym 2007 3 -o results.json
+python3 AZScraper.py -y 2007 -m 3 -o results.json
 ```
 
 **Test Specific Governorates**
 ```bash
 # Single governorate (Cairo)
-python3 AZScraper.py -ym 2007 3 -g 01 -o cairo_results.json
+python3 AZScraper.py -y 2007 -m 3 -g 01 -o cairo_results.json
 
 # Multiple governorates (Cairo, Alexandria, Giza)
-python3 AZScraper.py -ym 2007 3 -g 01 02 21 -o major_cities.json
+python3 AZScraper.py -y 2007 -m 3 -g 01 02 21 -o major_cities.json
 
 # Delta region governorates
-python3 AZScraper.py -ym 2007 3 -g 11 12 13 14 15 16 17 18 -o delta_results.json
+python3 AZScraper.py -y 2007 -m 3 -g 11 12 13 14 15 16 17 18 -o delta_results.json
 ```
 
 ### ⚙️ Command Line Arguments
@@ -80,7 +80,8 @@ python3 AZScraper.py -ym 2007 3 -g 11 12 13 14 15 16 17 18 -o delta_results.json
 | Argument | Description | Example | Default |
 |----------|-------------|---------|----------|
 | `-dob DOB` | Exact date of birth (YMMDD format) | `-dob 70315` | - |
-| `-ym YEAR MONTH` | Year and month | `-ym 2007 3` | - |
+| `-y, --year YEAR` | Birth year | `-y 2007` | - |
+| `-m, --month MONTH` | Birth month (1-12) | `-m 3` | - |
 | `-g GOV [GOV ...]` | Specific governorate ID(s) | `-g 01 12` | All governorates |
 | `-o, --file FILE` | Output JSON file | `-o results.json` | `valid_responses.json` |
 | `-t, --threads THREADS` | Number of threads | `-t 20` | `50` |
@@ -91,13 +92,13 @@ python3 AZScraper.py -ym 2007 3 -g 11 12 13 14 15 16 17 18 -o delta_results.json
 **High-Performance Targeted Search**
 ```bash
 # Search March 2007 in Cairo with 20 threads
-python3 AZScraper.py -ym 2007 3 -g 01 -t 20 -o cairo_march_2007.json
+python3 AZScraper.py -y 2007 -m 3 -g 01 -t 20 -o cairo_march_2007.json
 ```
 
 **Multi-Governorate Regional Search**
 ```bash
 # Search Upper Egypt governorates for March 2007
-python3 AZScraper.py -ym 2007 3 -g 25 26 27 28 29 31 -o upper_egypt.json
+python3 AZScraper.py -y 2007 -m 3 -g 25 26 27 28 29 31 -o upper_egypt.json
 ```
 
 **Exact Date with Multiple Locations**

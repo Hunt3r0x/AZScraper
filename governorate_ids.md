@@ -43,13 +43,13 @@ Use these IDs with the `-g` parameter to target specific governorates:
 
 ```bash
 # Test only Cairo
-python3 AZScraper.py -ym 2007 3 -g 01 -o cairo_results.json
+python3 AZScraper.py -y 2007 -m 3 -g 01 -o cairo_results.json
 
 # Test Cairo and Alexandria
-python3 AZScraper.py -ym 2007 3 -g 01 02 -o major_cities.json
+python3 AZScraper.py -y 2007 -m 3 -g 01 02 -o major_cities.json
 
 # Test all Delta governorates
-python3 AZScraper.py -ym 2007 3 -g 11 12 13 14 15 16 17 18 -o delta_results.json
+python3 AZScraper.py -y 2007 -m 3 -g 11 12 13 14 15 16 17 18 -o delta_results.json
 
 # Test specific date with multiple governorates
 python3 AZScraper.py -dob 70315 -g 01 21 02 -o specific_date.json
