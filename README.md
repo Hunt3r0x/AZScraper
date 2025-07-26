@@ -156,7 +156,7 @@ See `governorate_ids.md` for a complete list of governorate IDs and names.
 - `12` - Dakahlia (الدقهلية)
 - `13` - Sharqia (الشرقية)
 
-![alt text](image.png)
+![alt text](image-1.png)
 
 ## ⚙️ How It Works
 
